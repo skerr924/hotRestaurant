@@ -23,7 +23,9 @@ var reservations = [
   }
 ];
 
-var waitingList = []; 
+var waitlist = []; 
+
+var visitors = 0; 
 
 
 // Routes
@@ -47,47 +49,39 @@ app.get("/reserve", function(req, res) {
 
 
 // Pulling the list of reservations from the database 
-app.get("api/reservations", function(req, res) {   //come back to this! 
-  var data = req.params;
-  console.log(data);
-
-  for (var i = 0; i < data.length; i++) {
-      return res.json(data.name);
-  }
-
-  return res.json(false);
+app.get("/api/tables", function(req, res) {  
+  res.json(data.reservations);
 });
 
-
-// Create new reservation - takes in JSON input
-app.post("/api/reservations", function(req, res) { //how to link this to front-end form 
-  var newReservation = req.name;
-  console.log(newReservation);
-  reservations.push(newReservation);
-  res.json(newReservation);
-
-
-});
 
 //Pulling waitlist from the database 
-app.get("api/waitlist", function(req, res) {   //come back to this! 
-  var data = req.params;
-  console.log(data);
-
-  for (var i = 0; i < data.length; i++) {
-      return res.json(data.name);
-  }
-
-  return res.json(false);
+app.get("/api/waitlist", function(req, res) {  
+  res.json(data.waitlist);
 });
 
+app.get("/api/", function(req, res){
+  res.json(data); 
+}); 
 
-// Create new waitlist member 
-app.post("/api/waitlist", function(req, res) { //how to link this to front-end form 
-  var newWaitList = req.name;
-  console.log(newWaitList);
-  reservations.push(newWaitList);
-  res.json(newWaitList);
+app.get("/api/visitors", function(req, res){ 
+  res.json(visitors); 
+})
 
 
+// Get new table data entry from POST
+app.post("/api/new", function(req, res) {
+  var newRes = req.body;
+  console.log(newRes);
+  if (newRes && newRes.name) {
+  	newRes.routeName = newRes.name.replace(/\s+/g, "").toLowerCase();
+  }
+  console.log(newRes);
+
+  if (data.reservations.length < 5) {
+  	data.reservations.push(newRes);
+  } else {
+  	data.waitlist.push(newRes);
+  }
+  
+  res.json(newRes);
 });
