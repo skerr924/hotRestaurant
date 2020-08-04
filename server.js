@@ -85,3 +85,36 @@ app.post("/api/new", function(req, res) {
   
   res.json(newRes);
 });
+
+app.get("/api/remove/:id?", function(req, res) {
+  var tableId = req.params.id;
+
+  if (tableId) {
+    
+	for (var i = 0; i < data.reservations.length; i++) {
+	  if (tableId === data.reservations[i].id) {
+	  	data.reservations.splice(i, 1);
+	  	if (data.waitlist.length > 0) {
+	  		var tempTable = data.waitlist.splice(0, 1)[0];
+	  		data.reservations.push(tempTable);
+	  	}
+
+	    return res.json(true);
+	  }
+  }
+  for (var i = 0; i < data.waitlist.length; i++) {
+	  if (tableId === data.waitlist[i].id) {
+	  	data.waitlist.splice(i, 1);
+
+	    return res.json(true);
+	  }
+	}
+	return res.json(false);
+  }
+
+});
+
+// server start 
+app.listen(PORT, function() {
+  console.log("App listening on PORT " + PORT);
+});
